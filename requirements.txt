@@ -1,0 +1,12 @@
+aiogram~=2.18
+aioredis~=2.0
+environs~=9.0
+orator==0.9.9
+py-money
+requests
+tinydb
+pymongo
+mongoengine
+rich
+pydantic
+python-telegram-bot-calendar
