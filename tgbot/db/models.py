@@ -1,5 +1,6 @@
 from rich.emoji import *
 from orator import Model
+from orator.orm import has_one
 from orator.orm import has_many
 from orator.orm import belongs_to
 from orator.orm import belongs_to_many
@@ -25,10 +26,20 @@ class Customer(Model):
     def forLog(self):
         uid = self.uid
         name = self.name
-        return f"{uid} | {name}"
+        data = self.data
+        return f"{uid} | {name} {data.serialize()}"
 
+    @has_one
+    def data(self):
+        return CustomersData
 
+class CustomersData(Model):
+    __guarded__ = ['created_at', 'updated_at']
+    __visible__ = ['category', 'login', 'crm_id']
 
+    @belongs_to
+    def customer(self):
+        return Customer
 
 
 

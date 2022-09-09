@@ -1,5 +1,6 @@
 from email import message
 from typing import Optional
+from unicodedata import category
 import requests
 import time
 import datetime
@@ -175,6 +176,21 @@ def check_api_token(token):
                 category
             ]
             return "\n".join(text)
+    except:
+        return False
+
+def check_user(token):
+    dt = {}
+    comparing_data = compare_data(dt, token)
+    response = requests.post(api_url + "check_token", data=comparing_data)
+    try:
+        if response.json()['status'] == 0:
+            return dict(category=0, login=0, crm_id=0)
+        else:
+            category = response.json()['data'][0]['tUser_categories']
+            login = response.json()['data'][0]['login']
+            crm_id = response.json()['data'][0]['id']
+            return dict(category=category, login=login, crm_id=crm_id)
     except:
         return False
 

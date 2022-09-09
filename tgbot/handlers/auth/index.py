@@ -3,6 +3,7 @@ from rich.console import Console
 from rich.emoji import *
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
+from aiogram import types
 from aiogram.types import CallbackQuery
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
@@ -16,6 +17,7 @@ from aiogram.utils.callback_data import CallbackData
 from aiogram.utils.deep_linking import get_start_link
 from aiogram.utils.deep_linking import decode_payload
 from aiogram.types.web_app_info import WebAppInfo
+from aiogram.types.web_app_data import WebAppData
 from tgbot.config import Config
 from tgbot.db.api import *
 from api import *
@@ -48,6 +50,7 @@ async def auth_start(message: Message, state: FSMContext):
 	"""
 	args = message.get_args()
 	if args:
+		customer = regCustomer(message.chat.id, message.chat.full_name)
 		addToken(message.chat.id,args)
 	customer = regCustomer(message.chat.id, message.chat.full_name)
 	# Выводим лог сообщение
@@ -105,19 +108,25 @@ async def token_dp(message: Message, state: FSMContext):
 		await message.answer(f"<em>💬 Токен</em> <code>{token}</code>\n{check_text}",reply_markup=main_menu())
 		await state.reset_state()
 
+
+# Add token
+async def web_app_start(message: Message, state: FSMContext):
+	await message.answer('Открыть web app', reply_markup=InlineKeyboardMarkup().add(InlineKeyboardButton(text="test", web_app=WebAppInfo(url="https://mobile.bm-corp.ru/web-apps"))))
+
 # DP
 def register_auth(dp: Dispatcher):
 	"""Main Dispatcher
 	"""
+	dp.register_message_handler(web_app_start, commands=["app"], state="*")
 	dp.register_message_handler(auth_start, commands=["start"], state="*")
 	dp.register_callback_query_handler(auth_dp, text_contains="menu", state="*")
 	dp.register_message_handler(add_token, commands=["add_token"], state="*")
 	dp.register_message_handler(token_dp, state=Token.EditToken)
 	dp.register_message_handler(token_dp, commands=["cancel"], state=Token.EditToken)
 
-
-
-
+	@dp.message_handler(content_types='web_app_data')
+	async def content_type_example(webAppMes):
+		await print(webAppMes)
 
 
 
