@@ -84,9 +84,22 @@ async def cheker_start(message: Message, state: FSMContext):
     if check == False:
         await message.answer("<em>💬  Токен не зарегистрирован в системе. Для добавления токена, нажмите /add_token</em>")
     else:
-        await message.answer(checker_text(), reply_markup=checker_menu())
-        await state.reset_state()
-
+        text = checker_text()
+        is_dealer = customer.is_dealer()
+        if is_dealer:
+            crm_id = customer.data.crm_id
+            check_permissions = getCheckWithoutCount(crm_id)
+            print(check_permissions)
+            if check_permissions == False:
+                text = infoForDealer(customer.data.crm_id)
+                await message.answer(text, reply_markup=main_menu())
+            else:
+                text = f"{checker_text()}\n{infoForDealer(customer.data.crm_id)}"
+                await message.answer(text, reply_markup=checker_menu())
+                await state.reset_state()
+        else:
+            await state.reset_state()
+            await message.answer(text, reply_markup=checker_menu())
 
 async def check_by_phone_dp(call: CallbackQuery, state: FSMContext):
     customer = regCustomer(call.message.chat.id, call.message.chat.full_name)
@@ -114,9 +127,13 @@ async def input_number_dp(message: Message, state: FSMContext):
                 date = app.dCreated.strftime('%d.%m.%Y года')
                 await message.answer(f"<b>🔴 Данный номер телефона забронирован {date}</b>", reply_markup=main_menu())
                 await state.reset_state()
+                if customer.is_dealer():
+                    getCheck(customer.data.crm_id)
             else:
                 await message.answer("<b>🟢 Данный номер телефона отсутствует в базе клиентов</b>", reply_markup=main_menu())
                 await state.reset_state()
+                if customer.is_dealer():
+                    getCheck(customer.data.crm_id)
 
     except:
         await message.answer("<em>💬 Номер телефона вводится в формате</em> <code>79990001122</code>\n\n<em>Ожидаю ввода номера...</em>", reply_markup=main_menu())
@@ -175,9 +192,13 @@ async def input_name_dp(message: Message, state: FSMContext):
                 date = app.dCreated.strftime('%d.%m.%Y года')
                 await message.answer(f"<b>🔴 Данное название компании в этом регионе по выбранному бренду забронировано {date}</b>", reply_markup=main_menu())
                 await state.reset_state()
+                if customer.is_dealer():
+                    getCheck(customer.data.crm_id)
             else:
                 await message.answer("<b>🟢 Данное название компании отсутствует в базе клиентов</b>", reply_markup=main_menu())
                 await state.reset_state()
+                if customer.is_dealer():
+                    getCheck(customer.data.crm_id)
 
 # DP
 def register_checker(dp: Dispatcher):

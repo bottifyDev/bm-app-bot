@@ -32,6 +32,9 @@ class Token(StatesGroup):
 def start_text(name):
 	return f"<b>Добро пожаловать, {name}!</b>\n\n<em>💬 Бот для проверки заявок в базе клиентов</em>"
 
+def check_information_text(period):
+	return f"Установлен период {period}"
+
 def remove_keyboard():
 	markup = ReplyKeyboardRemove()
 	return markup
@@ -61,7 +64,13 @@ async def auth_start(message: Message, state: FSMContext):
 		check_text = f"<em>\n💬  Токен не зарегистрирован в системе. Для добавления токена,\nнажмите /add_token</em>"
 	else:
 		check_text = f"{check}"
-	text = f"{start_text(customer.name)}\n{check_text}"
+	if customer.is_dealer():
+		check_permissions = getCheckWithoutCount(customer.data.crm_id)
+		print(check_permissions)
+		dealer_text = infoForDealer(customer.data.crm_id)
+	else:
+		dealer_text = "-"
+	text = f"{start_text(customer.name)}\n{check_text}\n{dealer_text}"
 	await message.answer(text, reply_markup=main_menu())
 	await state.reset_state()
 

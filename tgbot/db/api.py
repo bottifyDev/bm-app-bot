@@ -1,13 +1,104 @@
+from tabnanny import check
+import pendulum
 from locale import currency
 from .models import *
 from rich import pretty
 from rich.emoji import *
 from rich.console import Console
 from api import check_user
+from .connect import db
 
 console = Console(color_system="256")
 arrow = Emoji('arrow_right')
 pretty.install()
+
+def setCheckConfig(period):
+    config = CheckConfig.all().first()
+    config.period = period
+    config.save()
+    updateCounts()
+    return config.serialize()
+
+def setCheck(crm_id):
+    # Создаем проверку для юзера crm если еще не
+    check = Check.first_or_create(crm_id=crm_id)
+    return check
+
+def getCheck(crm_id):
+    #
+    period = CheckConfig.first().period
+    first_or_create = setCheck(crm_id)
+    check = Check.where('crm_id', crm_id).first()
+    if check.get_period() < int(period) and check.count < 5:
+        check.set_count()
+
+    elif check.get_period() >= int(period) and check.count == 5:
+        check.count = 0
+        check.update()
+
+    elif check.get_period() > int(period) and check.count < 5:
+        check.set_count()
+
+    elif check.get_period() < int(period) and check.count == 5:
+        return False
+
+
+def getCheckWithoutCount(crm_id):
+    period = CheckConfig.first().period
+    first_or_create = setCheck(crm_id)
+    check = Check.where('crm_id', crm_id).first()
+    if check.get_period() < int(period) and check.count == 5:
+        return False
+    elif check.get_period() >= int(period):
+        check.count = 0
+        check.update()
+        return dict(count=check.count)
+    else:
+        return dict(count=check.count)
+
+def infoForDealer(crm_id):
+    current_period = CheckConfig.first().humanize()
+    if getCheckWithoutCount(crm_id):
+        if Check.where('crm_id', crm_id).first().count == 5:
+            current_count = 0
+            future_date_text = f"-"
+            last_date = f"----"
+        else:
+            current_count = Check.where('crm_id', crm_id).first().count
+            future_date_text = f"-"
+            if current_count == 0:
+                last_date = f"-"
+            else:
+                last_date = Check.where('crm_id', crm_id).first().get_date().strftime("%d.%m.%y - %H:%M:%S")
+    else:
+        current_count = Check.where('crm_id', crm_id).first().count
+        current_date = Check.where('crm_id', crm_id).first().get_date()
+        seconds = int(CheckConfig.first().period)
+        now = pendulum.now('Europe/Moscow')
+        future_date = current_date.add(seconds=seconds)
+        period = future_date - now
+        interval = period.as_interval()
+        interval.set_locale('ru')
+        future_date_str = future_date.strftime("%d.%m.%y - %H:%M:%S")
+        future_date_text = f"<b>▪️ Следующая проверка: {future_date_str}</b>\n<b>▪️ Через {interval}</b>"
+        last_date = Check.where('crm_id', crm_id).first().get_date().strftime("%d.%m.%y - %H:%M:%S")
+    text = [
+        '➖➖➖➖➖➖➖',
+        f'<b>▪️ Период проверки: {current_period}</b>',
+        f'<b>▪️ Использовано проверок: {current_count}/5</b>',
+        f'<b>▪️ Последняя проверка: {last_date}</b>',
+        future_date_text
+        ]
+    return "\n".join(text)
+
+
+def delCheck(crm_id):
+    check = Check.where('crm_id', crm_id).first()
+    check.delete()
+    return True
+
+def updateCounts():
+    Check.where('count', '>', 0).update(count=0)
 
 def getInformation():
     """Получение статистики
