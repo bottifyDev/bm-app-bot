@@ -80,13 +80,13 @@ def infoForDealer(crm_id):
         interval = period.as_interval()
         interval.set_locale('ru')
         future_date_str = future_date.strftime("%d.%m.%y - %H:%M:%S")
-        future_date_text = f"<b>▪️ Следующая проверка: {future_date_str}</b>\n<b>▪️ Через {interval}</b>"
+        future_date_text = f"\n<em>⏳ Проверка будет доступна через\n{interval}</em>"
         last_date = Check.where('crm_id', crm_id).first().get_date().strftime("%d.%m.%y - %H:%M:%S")
     text = [
         '➖➖➖➖➖➖➖',
         f'<b>▪️ Период проверки: {current_period}</b>',
         f'<b>▪️ Использовано проверок: {current_count}/5</b>',
-        f'<b>▪️ Последняя проверка: {last_date}</b>',
+        # f'<b>▪️ Последняя проверка: {last_date}</b>',
         future_date_text
         ]
     return "\n".join(text)
@@ -144,6 +144,12 @@ def regCustomer(uid,name):
             name=name,
             balance=0,
             token=123)
+        customer_data = CustomersData()
+        customer_data.customer_id = customer.id
+        customer_data.category = 0
+        customer_data.login = "-"
+        customer_data.crm_id = 0
+        customer_data.save()
         return customer
 
 

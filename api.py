@@ -161,7 +161,7 @@ def check_api_token(token):
     response = requests.post(api_url + "check_token", data=comparing_data)
     try:
         if response.json()['status'] == 0:
-            return response.json()['message']
+            return False
         else:
             if int(response.json()["data"][0]["tUser_categories"]) == 100:
                 category = f"<b>▪️ Категория:</b> Дилер"
@@ -192,7 +192,7 @@ def check_user(token):
             crm_id = response.json()['data'][0]['id']
             return dict(category=category, login=login, crm_id=crm_id)
     except:
-        return False
+        return dict(category=0, login=0, crm_id=0)
 
 
 

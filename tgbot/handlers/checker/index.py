@@ -35,8 +35,11 @@ class CheckByName(StatesGroup):
     InputRegion = State()
     InputName = State()
 
-def checker_text():
-    return f"<b>✅ Проверка заявки</b>\n\n<em>💬 Вы можете проверить заявку по номеру телефона или по имени компании. Выберите необходимый фильтр 👇</em>"
+def checker_title_text():
+    return f"<b>✅ Проверка заявки</b>"
+
+def checker_tips_text():
+    return f"<em>💬 Вы можете проверить заявку по номеру телефона или по имени компании. Выберите необходимый фильтр 👇</em>"
 
 def by_phone_text():
     return f"<b>📱 Проверка заявки по номеру телефона</b>\n\n<em>💬 Номер телефона вводится в формате</em> <code>79990001122</code>"
@@ -84,17 +87,17 @@ async def cheker_start(message: Message, state: FSMContext):
     if check == False:
         await message.answer("<em>💬  Токен не зарегистрирован в системе. Для добавления токена, нажмите /add_token</em>")
     else:
-        text = checker_text()
+        text = f"{checker_title_text()}\n{checker_tips_text()}"
         is_dealer = customer.is_dealer()
         if is_dealer:
             crm_id = customer.data.crm_id
             check_permissions = getCheckWithoutCount(crm_id)
             print(check_permissions)
             if check_permissions == False:
-                text = infoForDealer(customer.data.crm_id)
+                text = f"{checker_title_text()}\n{infoForDealer(customer.data.crm_id)}"
                 await message.answer(text, reply_markup=main_menu())
             else:
-                text = f"{checker_text()}\n{infoForDealer(customer.data.crm_id)}"
+                text = f"{checker_title_text()}\n{infoForDealer(customer.data.crm_id)}\n{checker_tips_text()}"
                 await message.answer(text, reply_markup=checker_menu())
                 await state.reset_state()
         else:
