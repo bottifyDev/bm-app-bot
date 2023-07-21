@@ -23,6 +23,6 @@ def get_model_by_model_id(brand_id, model_id, token):
   return found_element
 
 
-print(get_models_by_brand_id(37, "LOIMSYMPUY"))
+# print(get_models_by_brand_id(37, "LOIMSYMPUY"))
 # print(get_model_by_model_id(37, 480, "LOIMSYMPUY"))
 # # print(get_brands("LOIMSYMPUY"))

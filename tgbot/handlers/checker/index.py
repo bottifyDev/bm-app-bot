@@ -230,11 +230,23 @@ async def show_brand_with_models(call: CallbackQuery, state: FSMContext):
     models_list = get_models_by_brand_id(brand_id, customer.token)
     await call.message.edit_text('Выберите модель', reply_markup=models_keyboard(models_list, brand_id))
 
+async def show_link_model(call: CallbackQuery, state: FSMContext):
+    customer = Customer.where('uid', call.message.chat.id).first()
+    brand_id = call.data.split(':')[1]
+    model_id = call.data.split(':')[2]
+    models_list = get_model_by_model_id(brand_id, model_id, customer.token)
+    get_model_info = get_model_by_model_id(brand_id, model_id, customer.token)
+    text = f"Ваша ссылка\n\n{get_model_info['link']}"
+    await call.message.answer(text)
+
 # DP
 def register_checker(dp: Dispatcher):
     dp.register_message_handler(brands_links_start, text="Получить ссылку на модель", state="*")
     dp.register_callback_query_handler(
         show_brand_with_models, text_contains="blbrnd", state="*")
+    dp.register_callback_query_handler(
+        show_link_model, text_contains="blbrnd", state="*")
+
 
     dp.register_message_handler(cheker_start, commands=["check"], state="*")
     dp.register_message_handler(
