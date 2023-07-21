@@ -245,18 +245,7 @@ async def show_link_model(call: CallbackQuery, state: FSMContext):
 # DP
 def register_checker(dp: Dispatcher):
 
-    @dp.message_handler(text="ржановсенд", state="*", is_admin=True)
-    async def rjanov(message: Message, state: FSMContext):
-        for customer in Customer.all():
-            try:
-                print('go')
-                time.sleep(3)
-                await dp.bot.send_message(customer.uid, 'бот обновлен - нажмите /start')
-            except:
-                pass
 
-
-    dp.register_message_handler(rjanov, text="ржановсенд", state="*")
     dp.register_message_handler(brands_links_start, text="Получить ссылку на модель", state="*")
     dp.register_callback_query_handler(
         show_brand_with_models, text_contains="blbrnd", state="*")
