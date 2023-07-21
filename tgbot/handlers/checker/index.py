@@ -245,7 +245,7 @@ def register_checker(dp: Dispatcher):
     dp.register_callback_query_handler(
         show_brand_with_models, text_contains="blbrnd", state="*")
     dp.register_callback_query_handler(
-        show_link_model, text_contains="blbrnd", state="*")
+        show_link_model, text_contains="blmdl", state="*")
 
 
     dp.register_message_handler(cheker_start, commands=["check"], state="*")
