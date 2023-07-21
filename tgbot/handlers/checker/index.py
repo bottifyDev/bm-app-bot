@@ -84,10 +84,17 @@ def brands_keyboard(brands: list):
     markup = InlineKeyboardMarkup(row_width=2)
     for brand in brands:
         brand_id = int(brand['id'])
-        markup.row(InlineKeyboardButton(text=f"🏷 {brand['name']}", callback_data=f"bl-brand:{brand_id}"))
+        markup.row(InlineKeyboardButton(text=f"{brand['name']}", callback_data=f"blbrnd:{brand_id}"))
     return markup
 
+# {'name': 'BSL350', 'id': '480', 'link': 'https://c.bm-corp.ru/mv/6b7da594-4880-4c0c-ac1f-0a6c3bf985d3'}
 
+def models_keyboard(models: list, brand_id: int):
+    markup = InlineKeyboardMarkup(row_width=2)
+    for model in models:
+        model_id = int(model['id'])
+        markup.row(InlineKeyboardButton(text=f"{model['name']}", callback_data=f"blmdl:{brand_id}:{model_id}"))
+    return markup
 
 async def cheker_start(message: Message, state: FSMContext):
     customer = regCustomer(message.chat.id, message.chat.full_name)
@@ -217,9 +224,18 @@ async def brands_links_start(message: Message, state: FSMContext):
     brands_list = get_brands_for_links(customer.token)
     await message.answer('Выберите бренд', reply_markup=brands_keyboard(brands_list))
 
+async def show_brand_with_models(call: CallbackQuery, state: FSMContext):
+    customer = Customer.where('uid', call.message.chat.id).first()
+    brand_id = call.data.split(':')[1]
+    models_list = get_models_by_brand_id(brand_id, customer.token)
+    await message.edit_text('Выберите модель', reply_markup=models_keyboard(models_list, brand_id))
+
 # DP
 def register_checker(dp: Dispatcher):
     dp.register_message_handler(brands_links_start, text="Получить ссылку на модель", state="*")
+    dp.register_callback_query_handler(
+        show_brand_with_models, text_contains="blbrnd", state="*")
+
     dp.register_message_handler(cheker_start, commands=["check"], state="*")
     dp.register_message_handler(
         cheker_start, text_contains="Проверка заявки", state="*")
