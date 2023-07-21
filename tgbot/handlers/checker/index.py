@@ -228,7 +228,7 @@ async def show_brand_with_models(call: CallbackQuery, state: FSMContext):
     customer = Customer.where('uid', call.message.chat.id).first()
     brand_id = call.data.split(':')[1]
     models_list = get_models_by_brand_id(brand_id, customer.token)
-    await message.edit_text('Выберите модель', reply_markup=models_keyboard(models_list, brand_id))
+    await call.message.edit_text('Выберите модель', reply_markup=models_keyboard(models_list, brand_id))
 
 # DP
 def register_checker(dp: Dispatcher):
