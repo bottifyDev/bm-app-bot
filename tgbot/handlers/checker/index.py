@@ -20,6 +20,7 @@ from ..auth.index import main_menu
 from tgbot.config import Config
 from tgbot.db.api import *
 from api import *
+from bl import *
 #########################################
 console = Console(color_system="256")
 arrow = Emoji('arrow_right')
@@ -78,6 +79,14 @@ def regions_menu(token):
         region_id = region['id']
         markup.row(InlineKeyboardButton(text=f"🏙 {region['name']}", callback_data=f"r:{region_id}") )
     return markup
+
+def brands_keyboard(brands: list):
+    markup = InlineKeyboardMarkup(row_width=2)
+    for brand in brands:
+        brand_id = int(brand['id'])
+        markup.row(InlineKeyboardButton(text=f"🏷 {brand['name']}", callback_data=f"bl-brand:{brand_id}"))
+    return markup
+
 
 
 async def cheker_start(message: Message, state: FSMContext):
@@ -205,8 +214,8 @@ async def input_name_dp(message: Message, state: FSMContext):
 
 async def brands_links_start(message: Message, state: FSMContext):
     customer = Customer.where('uid', message.chat.id).first()
-    data = get_models_data(customer.token)
-    await message.answer(data.json())
+    brands_list = get_brands_for_links(customer.token)
+    await message.answer('Выберите бренд', reply_markup=brands_keyboard(brands_list))
 
 # DP
 def register_checker(dp: Dispatcher):
