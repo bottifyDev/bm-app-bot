@@ -203,8 +203,14 @@ async def input_name_dp(message: Message, state: FSMContext):
                 if customer.is_dealer():
                     getCheck(customer.data.crm_id)
 
+async def brands_links_start(message: Message, state: FSMContext):
+    customer = Customer.where('uid', message.chat.id).first()
+    data = get_models_data(customer.token)
+    await message.answer(data.json())
+
 # DP
 def register_checker(dp: Dispatcher):
+    dp.register_message_handler(brands_links_start, text="Получить ссылку на модель", state="*")
     dp.register_message_handler(cheker_start, commands=["check"], state="*")
     dp.register_message_handler(
         cheker_start, text_contains="Проверка заявки", state="*")

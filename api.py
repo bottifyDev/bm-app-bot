@@ -55,12 +55,24 @@ def set_missing(dt,token):
 	response = requests.post(api_url + "set_missing", data=comparing_data)
 	return response
 
+def get_models_data(token):
+    dt = {}
+    dt['auth'] = 'kQYvSOG02hnbP8m6osI9xSZ5'
+    dt['token'] = token
+    comparing_data = compare_data(dt,token)
+    response = requests.post(api_url + "get_models_links", data=comparing_data)
+    return response
+    
+
+
 def get_reasons():
 	response = requests.post(api_url + "get_reasons", data=auth_data)
 	if response.json()['status'] == 1:
 		return response.json()['data']
 	else:
 		return []
+
+
 
 def get_reason(reason_id):
 	reasons = get_reasons()

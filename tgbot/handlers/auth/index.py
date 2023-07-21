@@ -43,7 +43,8 @@ def remove_keyboard():
 def main_menu():
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     time_btn = KeyboardButton(text="Проверка заявки")
-    markup.row(time_btn)
+    brands_btn = KeyboardButton(text="Получить ссылку на модель")
+    markup.row(time_btn, brands_btn)
     return markup
 
 
