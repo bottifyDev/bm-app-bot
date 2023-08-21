@@ -44,7 +44,8 @@ def main_menu():
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     time_btn = KeyboardButton(text="Проверка заявки")
     brands_btn = KeyboardButton(text="Получить ссылку на модель")
-    markup.row(time_btn, brands_btn)
+    markup.row(time_btn)
+    markup.row(brands_btn)
     return markup
 
 

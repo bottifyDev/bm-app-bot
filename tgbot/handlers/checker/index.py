@@ -237,7 +237,7 @@ async def show_link_model(call: CallbackQuery, state: FSMContext):
     model_id = call.data.split(':')[2]
     models_list = get_model_by_model_id(brand_id, model_id, customer.token)
     get_model_info = get_model_by_model_id(brand_id, model_id, customer.token)
-    text = f"Ваша ссылка\n\n{get_model_info['link']}"
+    text = f"Ваша ссылка\n\n{get_model_info['link']}?f=tg"
     await call.message.answer(text, disable_web_page_preview = False)
 
 
