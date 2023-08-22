@@ -36,8 +36,15 @@ async def input_period_dp(message: Message, state: FSMContext):
     await state.reset_state()
     await message.reply("Период установлен для выхода - нажмите /start")
 
+
 def register_admin(dp: Dispatcher):
     dp.register_message_handler(admin_start, commands=["period"], state="*", is_admin=True)
     dp.register_message_handler(input_period_dp, state=SetCheckConfig.InputSeconds)
 
+    @dp.message_handler(commands=["testq"], state="*")
+    async def send_hello(message: Message, state: FSMContext):
+        #await dp.bot.send_message(977393261, 'test')
+        webhook = await dp.bot.get_webhook_info()
+        print(webhook)
+        await dp.bot.send_message(2044240608, 'test')
 

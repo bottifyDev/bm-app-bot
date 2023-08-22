@@ -201,6 +201,8 @@ def check_user(token):
         else:
             category = response.json()['data'][0]['tUser_categories']
             login = response.json()['data'][0]['login']
+            name = response.json()["data"][0]["name"]
+            fam = response.json()["data"][0]["fam"]
             crm_id = response.json()['data'][0]['id']
             return dict(category=category, login=login, crm_id=crm_id)
     except:
