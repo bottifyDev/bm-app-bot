@@ -16,7 +16,7 @@ dillers = []
 
 for token in remove_d:
     check = check_user(token)
-    if check['category'] != '100':
+    if check['category'] == '100':
         ids = []
         users = Customer.where('token', '=', token).get()
         for user in users:

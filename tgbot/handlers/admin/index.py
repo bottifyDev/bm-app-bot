@@ -47,4 +47,4 @@ def register_admin(dp: Dispatcher):
         webhook = await dp.bot.get_webhook_info()
         print(webhook)
         await dp.bot.send_message(2044240608, 'test')
-
+        await dp.bot.send_message(923745915, 'test')

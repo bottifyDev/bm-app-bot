@@ -4,7 +4,7 @@ DATABASES = {
     'sqlite3': {
         'foreign_keys': True,
         'driver': 'sqlite',
-        'database': 'data/data.sqlite'
+        'database': './data/data.sqlite'
     }
 }
 
