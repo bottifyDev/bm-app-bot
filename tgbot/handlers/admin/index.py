@@ -46,5 +46,5 @@ def register_admin(dp: Dispatcher):
         #await dp.bot.send_message(977393261, 'test')
         webhook = await dp.bot.get_webhook_info()
         print(webhook)
-        await dp.bot.send_message(2044240608, 'test')
-        await dp.bot.send_message(923745915, 'test')
+        await dp.bot.send_message(2044240608, 'Что произойдет, если трижды неправильно ввести PIN-код при запуске минипогрузчика Locust?')
+        await dp.bot.send_message(923745915, 'тест из админки')
